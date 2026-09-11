@@ -11,16 +11,13 @@ public interface SpecialistRepository extends JpaRepository<Specialist, Long> {
 
     // Paso 39: especialistas activos que posean determinada experiencia.
     // Debe usar JOIN + LOWER + named parameter + active = true + ORDER BY.
-    //
-    // TODO: completar el JPQL. Punto de partida (Paso 44 de la guía):
-    //
-    // @Query("""
-    //     select distinct s
-    //     from Specialist s
-    //     join s.expertiseAreas e
-    //     where lower(e.name) = lower(:expertiseName)
-    //       and s.active = true
-    //     order by s.lastName asc
-    //     """)
-    // List<Specialist> findActiveByExpertise(@Param("expertiseName") String expertiseName);
+    @Query("""
+            select distinct s
+            from Specialist s
+            join s.expertiseAreas e
+            where lower(e.name) = lower(:expertiseName)
+              and s.active = true
+            order by s.lastName asc
+            """)
+    List<Specialist> findActiveByExpertise(@Param("expertiseName") String expertiseName);
 }

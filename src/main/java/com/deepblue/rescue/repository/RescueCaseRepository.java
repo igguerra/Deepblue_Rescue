@@ -11,18 +11,21 @@ import java.util.Optional;
 public interface RescueCaseRepository extends JpaRepository<RescueCase, Long> {
 
     // Paso 32 - Consulta A: buscar un caso por caseCode
-    // TODO: Optional<RescueCase> findByCaseCode(String caseCode);
+    Optional<RescueCase> findByCaseCode(String caseCode);
 
-    // Paso 32 - Consulta B: buscar todos los casos según status, ordenados por rescueDate ASC
-    // TODO: List<RescueCase> findByStatusOrderByRescueDateAsc(RescueStatus status);
+    // Paso 32 - Consulta B: buscar todos los casos según status, ordenados por
+    // rescueDate ASC
+    List<RescueCase> findByStatusOrderByRescueDateAsc(RescueStatus status);
 
-    // Paso 32 - Consulta C / Paso 33: buscar casos de un centro determinado navegando
+    // Paso 32 - Consulta C / Paso 33: buscar casos de un centro determinado
+    // navegando
     // RescueCase -> rescueCenter -> code (SIN usar el ID)
     // Pista: el camino se refleja en el nombre del método:
-    //        findByRescueCenter_Code / findByRescueCenterCode
-    // TODO: List<RescueCase> findByRescueCenterCode(String centerCode);
+    // findByRescueCenter_Code / findByRescueCenterCode
+    List<RescueCase> findByRescueCenterCode(String centerCode);
 
-    // Paso 42: casos posteriores a determinada fecha, ordenados del más reciente al más antiguo
+    // Paso 42: casos posteriores a determinada fecha, ordenados del más reciente al
+    // más antiguo
     // Pista: RescueDate + After + OrderBy + RescueDate + Desc
-    // TODO: List<RescueCase> findByRescueDateAfterOrderByRescueDateDesc(LocalDate date);
+    List<RescueCase> findByRescueDateAfterOrderByRescueDateDesc(LocalDate date);
 }
