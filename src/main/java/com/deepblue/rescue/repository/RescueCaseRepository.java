@@ -17,15 +17,10 @@ public interface RescueCaseRepository extends JpaRepository<RescueCase, Long> {
     // rescueDate ASC
     List<RescueCase> findByStatusOrderByRescueDateAsc(RescueStatus status);
 
-    // Paso 32 - Consulta C / Paso 33: buscar casos de un centro determinado
-    // navegando
-    // RescueCase -> rescueCenter -> code (SIN usar el ID)
-    // Pista: el camino se refleja en el nombre del método:
-    // findByRescueCenter_Code / findByRescueCenterCode
+    // Paso 32 - Consulta C / Paso 33: buscar casos de un centro determinado navegando
     List<RescueCase> findByRescueCenterCode(String centerCode);
 
     // Paso 42: casos posteriores a determinada fecha, ordenados del más reciente al
     // más antiguo
-    // Pista: RescueDate + After + OrderBy + RescueDate + Desc
     List<RescueCase> findByRescueDateAfterOrderByRescueDateDesc(LocalDate date);
 }

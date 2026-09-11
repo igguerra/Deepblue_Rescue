@@ -15,15 +15,13 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
     List<Treatment> findByAnimalIdOrderByPerformedAtAsc(Long animalId);
 
     // Paso 42: tratamientos realizados entre dos fechas (JPQL)
-    // TODO:
-    // @Query("""
-    // select t
-    // from Treatment t
-    // where t.performedAt between :start and :end
-    // order by t.performedAt asc
-    // """)
-    // List<Treatment> findBetweenDates(@Param("start") LocalDateTime start,
-    // @Param("end") LocalDateTime end);
+    @Query("""
+        select t
+        from Treatment t
+        where t.performedAt between :start and :end
+        order by t.performedAt asc
+        """)
+    List<Treatment> findBetweenDates(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     // Paso 43: tratamientos de animales pertenecientes a un centro determinado
     // (JPQL)

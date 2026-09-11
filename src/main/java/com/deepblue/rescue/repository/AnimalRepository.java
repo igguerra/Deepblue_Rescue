@@ -26,9 +26,6 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
     // Camino: Animal -> RescueCase -> RescueCenter -> code
     List<Animal> findByRescueCaseRescueCenterCode(String centerCode);
 
-    // PARTE XIII (reto sin guía): animales en rehabilitación que hayan recibido
-    // al menos un tratamiento de un especialista con determinada expertise.
-    //
     // Se elige @Query + JPQL en lugar de Query Method porque la condición combina
     // dos caminos de navegación distintos sobre la misma entidad (rescueCase.status
     // y treatments.specialist.expertiseAreas.name), lo que haría el nombre del método
