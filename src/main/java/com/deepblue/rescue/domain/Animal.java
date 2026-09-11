@@ -22,6 +22,9 @@ public class Animal {
     @Column(name = "scientific_name", nullable = false, length = 150)
     private String scientificName;
 
+    @Column(name = "tracking_device_code", unique = true, length = 50)
+    private String trackingDeviceCode;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private AnimalSex sex;
@@ -93,6 +96,11 @@ public class Animal {
         return treatments;
     }
 
-    // TODO (Paso 69): agregar aquí el campo trackingDeviceCode
-    // cuando implementes V3__add_tracking_device_to_animal.sql
+    public String getTrackingDeviceCode() {
+        return trackingDeviceCode;
+    }
+
+    public void setTrackingDeviceCode(String trackingDeviceCode) {
+        this.trackingDeviceCode = trackingDeviceCode;
+    }
 }
