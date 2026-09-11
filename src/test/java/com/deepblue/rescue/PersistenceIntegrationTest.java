@@ -111,37 +111,45 @@ class PersistenceIntegrationTest {
 
     //PASO 51
     @Test
-    void animalCascadesMedicalRecord() {
-    Animal animal = animalRepository.save(new Animal("AN-020", "Delfín Nariz de Botella", "Tursiops truncatus", AnimalSex.MALE));
+void animalCascadesMedicalRecord() {
+RescueCenter center = rescueCenterRepository.save(new RescueCenter("DB-020", "Centro Santa Marta", "Santa Marta"));
+RescueCase rescueCase = new RescueCase("CASE-020", LocalDate.now(), "Bahía Santa Marta", RescueStatus.ADMITTED);
+center.addCase(rescueCase);
+rescueCaseRepository.save(rescueCase);
 
-    MedicalRecord record = new MedicalRecord(new BigDecimal("150.50"), "Estable", "Herida en aleta", "Buena recuperación");
-    animal.assignMedicalRecord(record);
-    animalRepository.save(animal);
+Animal animal = new Animal("AN-020", "Delfín Nariz de Botella", "Tursiops truncatus", AnimalSex.MALE);
+rescueCase.assignAnimal(animal);
+animalRepository.save(animal);
 
-    Optional<Animal> found = animalRepository.findByAnimalCode("AN-020");
+MedicalRecord record = new MedicalRecord(new BigDecimal("150.50"), "Estable", "Herida en aleta", "Buena recuperación");
+animal.assignMedicalRecord(record);
+animalRepository.save(animal);
 
-    assertThat(found).isPresent();
-    assertThat(found.get().getMedicalRecord()).isNotNull();
-    assertThat(found.get().getMedicalRecord().getInitialCondition()).isEqualTo("Estable");
-    }
+Optional<Animal> found = animalRepository.findByAnimalCode("AN-020");
+
+assertThat(found).isPresent();
+assertThat(found.get().getMedicalRecord()).isNotNull();
+assertThat(found.get().getMedicalRecord().getInitialCondition()).isEqualTo("Estable");
+}
 
     //PASO 52
-    @Test
-    void specialistHasManyExpertiseAreas() {
-    Expertise trauma = expertiseRepository.save(new Expertise("Trauma"));
-    Expertise nutrition = expertiseRepository.save(new Expertise("Nutrición"));
+@Test
+void specialistHasManyExpertiseAreas() {
+Expertise trauma = expertiseRepository.findByNameIgnoreCase("Trauma")
+        .orElseThrow(() -> new IllegalStateException("Expertise 'Trauma' debería existir por el catálogo (V2)"));
+Expertise nutrition = expertiseRepository.save(new Expertise("Nutrición"));
 
-    Specialist specialist = new Specialist("SP-001", "Ana", "Gómez", "ana.gomez@deepblue.org");
-    specialist.addExpertise(trauma);
-    specialist.addExpertise(nutrition);
-    specialistRepository.save(specialist);
+Specialist specialist = new Specialist("SP-001", "Ana", "Gómez", "ana.gomez@deepblue.org");
+specialist.addExpertise(trauma);
+specialist.addExpertise(nutrition);
+specialistRepository.save(specialist);
 
-    List<Specialist> found = specialistRepository.findActiveByExpertise("Trauma");
+List<Specialist> found = specialistRepository.findActiveByExpertise("Trauma");
 
-    assertThat(found).hasSize(1);
-    assertThat(found.get(0).getExpertiseAreas()).extracting(Expertise::getName)
-            .containsExactlyInAnyOrder("Trauma", "Nutrición");
-    }
+assertThat(found).hasSize(1);
+assertThat(found.get(0).getExpertiseAreas()).extracting(Expertise::getName)
+        .containsExactlyInAnyOrder("Trauma", "Nutrición");
+}
 
     //PASO 53
     @Test
@@ -222,16 +230,27 @@ class PersistenceIntegrationTest {
     assertThat(byRange.get(0).getDescription()).isEqualTo("Curación inicial");
     }
 
-    @Test
-    void rejectsDuplicatedAnimalCode() {
-    animalRepository.saveAndFlush(new Animal("AN-070", "Tortuga Carey", "Eretmochelys imbricata", AnimalSex.MALE));
+@Test
+void rejectsDuplicatedAnimalCode() {
+RescueCenter center = rescueCenterRepository.save(new RescueCenter("DB-070", "Centro Riohacha", "Riohacha"));
 
-    Animal duplicate = new Animal("AN-070", "Otra Tortuga", "Otra especie", AnimalSex.FEMALE);
+RescueCase case1 = new RescueCase("CASE-070", LocalDate.now(), "Manaure", RescueStatus.ADMITTED);
+center.addCase(case1);
+rescueCaseRepository.save(case1);
+Animal animal = new Animal("AN-070", "Tortuga Carey", "Eretmochelys imbricata", AnimalSex.MALE);
+case1.assignAnimal(animal);
+animalRepository.saveAndFlush(animal);
 
-    assertThrows(DataIntegrityViolationException.class, () -> {
-        animalRepository.saveAndFlush(duplicate);
-    });
-    }
+RescueCase case2 = new RescueCase("CASE-071", LocalDate.now(), "Manaure", RescueStatus.ADMITTED);
+center.addCase(case2);
+rescueCaseRepository.save(case2);
+Animal duplicate = new Animal("AN-070", "Otra Tortuga", "Otra especie", AnimalSex.FEMALE);
+case2.assignAnimal(duplicate);
+
+assertThrows(DataIntegrityViolationException.class, () -> {
+    animalRepository.saveAndFlush(duplicate);
+});
+}
 
     @Test
     void completeTurtleRescueScenario() {
@@ -270,30 +289,31 @@ class PersistenceIntegrationTest {
             .contains("Fauna Marina");
     }
 
-    @Test
-    void findsAnimalsInRehabilitationTreatedBySpecialistWithTraumaExpertise() {
-    RescueCenter center = rescueCenterRepository.save(new RescueCenter("DB-090", "Centro Palomino", "Palomino"));
+@Test
+void findsAnimalsInRehabilitationTreatedBySpecialistWithTraumaExpertise() {
+RescueCenter center = rescueCenterRepository.save(new RescueCenter("DB-090", "Centro Palomino", "Palomino"));
 
-    RescueCase rescueCase = new RescueCase("CASE-090", LocalDate.now(), "Palomino", RescueStatus.IN_REHABILITATION);
-    center.addCase(rescueCase);
-    rescueCaseRepository.save(rescueCase);
+RescueCase rescueCase = new RescueCase("CASE-090", LocalDate.now(), "Palomino", RescueStatus.IN_REHABILITATION);
+center.addCase(rescueCase);
+rescueCaseRepository.save(rescueCase);
 
-    Animal animal = new Animal("AN-090", "Manatí", "Trichechus manatus", AnimalSex.MALE);
-    rescueCase.assignAnimal(animal);
-    animalRepository.save(animal);
+Animal animal = new Animal("AN-090", "Manatí", "Trichechus manatus", AnimalSex.MALE);
+rescueCase.assignAnimal(animal);
+animalRepository.save(animal);
 
-    Expertise trauma = expertiseRepository.save(new Expertise("Trauma"));
-    Specialist specialist = new Specialist("SP-090", "Jorge", "Díaz", "jorge.diaz@deepblue.org");
-    specialist.addExpertise(trauma);
-    specialistRepository.save(specialist);
+Expertise trauma = expertiseRepository.findByNameIgnoreCase("Trauma")
+        .orElseThrow(() -> new IllegalStateException("Expertise 'Trauma' debería existir por el catálogo (V2)"));
+Specialist specialist = new Specialist("SP-090", "Jorge", "Díaz", "jorge.diaz@deepblue.org");
+specialist.addExpertise(trauma);
+specialistRepository.save(specialist);
 
-    Treatment treatment = new Treatment(animal, specialist, LocalDateTime.now(), TreatmentType.SURGERY, "Cirugía por trauma");
-    treatmentRepository.save(treatment);
+Treatment treatment = new Treatment(animal, specialist, LocalDateTime.now(), TreatmentType.SURGERY, "Cirugía por trauma");
+treatmentRepository.save(treatment);
 
-    List<Animal> found = animalRepository.findInRehabilitationTreatedBySpecialistWithExpertise(
-            RescueStatus.IN_REHABILITATION, "Trauma");
+List<Animal> found = animalRepository.findInRehabilitationTreatedBySpecialistWithExpertise(
+        RescueStatus.IN_REHABILITATION, "Trauma");
 
-    assertThat(found).hasSize(1);
-    assertThat(found.get(0).getAnimalCode()).isEqualTo("AN-090");
-    }
+assertThat(found).hasSize(1);
+assertThat(found.get(0).getAnimalCode()).isEqualTo("AN-090");
+}
 }
