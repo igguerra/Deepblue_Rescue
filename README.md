@@ -73,9 +73,12 @@ En *PersistenceIntegrationTest*, el contenedor se declara así:
                     .withDatabaseName("deepblue_test")
                     .withUsername("deepblue")
                     .withPassword("deepblue");
-    @Testcontainers habilita el ciclo de vida automático del contenedor durante la clase de test.
-    @Container marca el campo como un contenedor administrado por Testcontainers.
-    @ServiceConnection conecta automáticamente el DataSource de Spring Boot al contenedor levantado, sin necesidad de configurar manualmente la URL, usuario o contraseña.
+                  
+**@Testcontainers** habilita el ciclo de vida automático del contenedor durante la clase de test.
+
+**@Container** marca el campo como un contenedor administrado por Testcontainers.
+
+**@ServiceConnection** conecta automáticamente el DataSource de Spring Boot al contenedor levantado, sin necesidad de configurar manualmente la URL, usuario o contraseña.
 
 Esto permite validar el comportamiento real de *JPA/Hibernate* contra PostgreSQL (tipos de datos, constraints, dialecto SQL) en cada ejecución de test, garantizando mayor fidelidad que una base de datos en memoria.
 
@@ -119,24 +122,30 @@ Esto permite validar el comportamiento real de *JPA/Hibernate* contra PostgreSQL
 
 # Tests de integración
 
-PersistenceIntegrationTest cubre, contra una base de datos PostgreSQL real levantada con Testcontainers:
+*PersistenceIntegrationTest* corre contra una base de datos PostgreSQL real levantada con Testcontainers y está anotada con **@Transactional**, por lo que cada test revierte sus cambios automáticamente al terminar, sin dejar datos residuales para el siguiente.
 
-  -Métodos heredados de JpaRepository (save, findById, existsById, count)
-  
-  -Relación 1:N entre RescueCenter y RescueCase
-  
-  -Relación 1:1 entre RescueCase y Animal
-  
-  -Relación 1:1 con cascade entre Animal y MedicalRecord
-  
-  -Relación N:M entre Specialist y Expertise
-  
-  -Query Methods simples y navegando relaciones (casos por estado, animales por centro)
-  
-  -Consultas JPQL de especialistas por experiencia y tratamientos por rango de fechas
-  
-  -Constraint UNIQUE sobre animalCode, verificado con saveAndFlush() y DataIntegrityViolationException
-  
-  -Escenario integrador completo (caso de rescate → animal → ficha médica → tratamiento → especialista)
-  
-  -Consulta combinada de animales en rehabilitación tratados por especialistas con una experiencia determinada
+Los 12 tests implementados son:
+
+-heritedMethodsWorkForRescueCenter: métodos heredados de JpaRepository (save, findById, existsById, count).
+
+-oneRescueCenterHasManyRescueCases: relación 1:N entre RescueCenter y RescueCase.
+
+-rescueCaseHasOneAnimal: relación 1:1 entre RescueCase y Animal.
+
+-animalCascadesMedicalRecord: relación 1:1 con cascade entre Animal y MedicalRecord.
+
+-specialistHasManyExpertiseAreas: relación N:M entre Specialist y Expertise.
+
+-findsRescueCasesByStatus: Query Method simple filtrando casos por estado.
+
+-findsAnimalsByRescueCenterCode: Query Method navegando relaciones (animales por centro).
+
+-findsActiveSpecialistsByExpertise: consulta JPQL de especialistas por experiencia.
+
+-findsTreatmentsByAnimalAndDateRange: Query Method y JPQL combinados sobre tratamientos, por animal y por rango de fechas.
+
+-rejectsDuplicatedAnimalCode: constraint UNIQUE sobre animalCode, verificado con saveAndFlush() y DataIntegrityViolationException.
+
+-completeTurtleRescueScenario: escenario integrador completo (caso de rescate → animal → ficha médica → tratamiento → especialista).
+
+-findsAnimalsInRehabilitationTreatedBySpecialistWithTraumaExpertise: consulta combinada de animales en rehabilitación tratados por especialistas con una experiencia determinada.
