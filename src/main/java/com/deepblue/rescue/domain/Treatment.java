@@ -4,25 +4,6 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO (Paso 27): Completar esta entidad tú mismo/a.
- *
- * Debe mapear la tabla "treatments" y contener:
- *   - Long id
- *   - Animal animal            -> @ManyToOne(fetch = FetchType.LAZY)
- *   - Specialist specialist    -> @ManyToOne(fetch = FetchType.LAZY)
- *   - LocalDateTime performedAt
- *   - TreatmentType type       -> @Enumerated(EnumType.STRING)
- *   - String description
- *
- * Pistas:
- *   - Usa @JoinColumn(name = "animal_id") y @JoinColumn(name = "specialist_id")
- *   - No olvides el constructor, getters y (si aplica) setters
- *   - Revisa el Paso 28: falta agregar las relaciones inversas en
- *     Animal.treatments y Specialist.treatments (ya están hechas en este
- *     esqueleto, pero verifica que el "mappedBy" coincida con el nombre
- *     de tu atributo aquí)
- */
 @Entity
 @Table(name = "treatments")
 public class Treatment {
@@ -31,30 +12,61 @@ public class Treatment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: mapear animal (@ManyToOne + @JoinColumn(name = "animal_id"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "animal_id", nullable = false)
+    private Animal animal; 
 
-    // TODO: mapear specialist (@ManyToOne + @JoinColumn(name = "specialist_id"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialist_id", nullable = false)
+    private Specialist specialist; 
 
-    // TODO: mapear performedAt (@Column(name = "performed_at", nullable = false))
+    @Column(name = "performed_at", nullable = false)
+    private LocalDateTime performedAt; 
 
-    // TODO: mapear type (@Enumerated(EnumType.STRING), @Column(nullable = false))
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TreatmentType type; 
 
-    // TODO: mapear description (@Column(columnDefinition = "TEXT"))
+    @Column(columnDefinition = "TEXT")
+    private String description; 
 
     protected Treatment() {
         // JPA
     }
 
-    // TODO: crear constructor(Animal animal, Specialist specialist,
-    //                          LocalDateTime performedAt, TreatmentType type,
-    //                          String description)
-    //       y asignar internamente animal/specialist (recuerda añadir "this"
-    //       a las listas treatments de Animal y Specialist si quieres mantener
-    //       ambos lados sincronizados)
+    public Treatment(Animal animal, Specialist specialist, LocalDateTime performedAt, TreatmentType type, String description) {
+        this.animal = animal; 
+        this.specialist = specialist; 
+        this.performedAt = performedAt; 
+        this.type = type; 
+        this.description = description; 
+
+        animal.getTreatments().add(this); 
+        specialist.getTreatments().add(this); 
+    }
+ 
 
     public Long getId() {
         return id;
     }
 
-    // TODO: agregar el resto de getters
+    public Animal getAnimal() {
+        return animal; 
+    }
+
+    public Specialist getSpecialist() {
+        return specialist; 
+    }
+
+    public LocalDateTime getPerformedAt() {
+        return performedAt; 
+    }
+
+    public TreatmentType getType() {
+        return type; 
+    }
+
+    public String getDescription() {
+        return description; 
+    }
 }
