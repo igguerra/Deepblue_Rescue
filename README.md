@@ -1,60 +1,57 @@
-DeepBlue Rescue
-
-
-Descripción
+# DeepBlue Rescue
 
 DeepBlue Rescue es un laboratorio de persistencia con Spring Boot, JPA/Hibernate y PostgreSQL que modela el funcionamiento de una red de centros de rescate de fauna marina. La plataforma permite registrar casos de rescate, hacer seguimiento a los animales rescatados (ficha médica, tratamientos) y administrar el equipo de especialistas que los atiende junto con sus áreas de experiencia.
 
 
-Modelo de datos
+# Modelo de datos
 
 El dominio está compuesto por las siguientes entidades:
 
-  -RescueCenter: centro de rescate (código, nombre, ciudad).
+  -**RescueCenter:** centro de rescate (código, nombre, ciudad).
   
-  -RescueCase: caso de rescate (código, fecha, ubicación, estado).
+  -**RescueCase:** caso de rescate (código, fecha, ubicación, estado).
   
-  -Animal: animal rescatado (código, nombre común, nombre científico, sexo, dispositivo de rastreo).
+  -**Animal:** animal rescatado (código, nombre común, nombre científico, sexo, dispositivo de rastreo).
   
-  -MedicalRecord: ficha médica inicial de un animal (peso, condición, lesiones, observaciones).
+  -**MedicalRecord:** ficha médica inicial de un animal (peso, condición, lesiones, observaciones).
   
-  -Specialist: especialista del equipo (código profesional, nombre, email, estado activo).
+  -**Specialist:** especialista del equipo (código profesional, nombre, email, estado activo).
   
-  -Expertise: área de experiencia de un especialista (ej. Trauma, Nutrición).
+  -**Expertise:** área de experiencia de un especialista (ej. Trauma, Nutrición).
   
-  -Treatment: tratamiento aplicado a un animal por un especialista (fecha, tipo, descripción).
+  -**Treatment:** tratamiento aplicado a un animal por un especialista (fecha, tipo, descripción).
 
-Enums de apoyo: AnimalSex, RescueStatus, TreatmentType.
+**Enums de apoyo:** AnimalSex, RescueStatus, TreatmentType.
 
 
-Relaciones
+# Relaciones
 
-  -RescueCenter → RescueCase (1:N): un centro tiene muchos casos (RescueCenter.rescueCases, mappedBy = "rescueCenter").
+  -**RescueCenter → RescueCase (1:N):** un centro tiene muchos casos (RescueCenter.rescueCases, mappedBy = "rescueCenter").
   
-  -RescueCase ↔ Animal (1:1): un caso tiene un único animal asociado, con cascade y orphanRemoval desde RescueCase.
+  -**RescueCase ↔ Animal (1:1):** un caso tiene un único animal asociado, con cascade y orphanRemoval desde RescueCase.
   
-  -Animal ↔ MedicalRecord (1:1): un animal tiene una única ficha médica, con cascade y orphanRemoval desde Animal.
+  -**Animal ↔ MedicalRecord (1:1):** un animal tiene una única ficha médica, con cascade y orphanRemoval desde Animal.
   
-  -Animal → Treatment (1:N): un animal puede tener varios tratamientos (mappedBy = "animal").
+  -**Animal → Treatment (1:N):** un animal puede tener varios tratamientos (mappedBy = "animal").
   
-  -Specialist → Treatment (1:N): un especialista puede realizar varios tratamientos (mappedBy = "specialist").
+  -**Specialist → Treatment (1:N):** un especialista puede realizar varios tratamientos (mappedBy = "specialist").
   
-  -Specialist ↔ Expertise (N:M): un especialista puede tener varias áreas de experiencia y viceversa, mediante la tabla intermedia specialist_expertise.
+  -**Specialist ↔ Expertise (N:M):** un especialista puede tener varias áreas de experiencia y viceversa, mediante la tabla intermedia specialist_expertise.
 
 Todas las relaciones usan FetchType.LAZY para evitar cargas innecesarias.
 
 
-Instrucciones para ejecutar
+# Instrucciones para ejecutar
 
-Requisitos: JDK 21, Maven, Docker (para Testcontainers) y, opcionalmente, una instancia local de PostgreSQL si se desea correr la aplicación fuera de pruebas.
+**Requisitos:** JDK 21, Maven, Docker (para Testcontainers) y, opcionalmente, una instancia local de PostgreSQL si se desea correr la aplicación fuera de pruebas.
 
     bash
     mvn clean install
 
-La configuración de conexión a base de datos se define en src/main/resources/application.yml, con valores por defecto que pueden sobreescribirse mediante las variables de entorno DB_URL, DB_USER y DB_PASSWORD.
+La configuración de conexión a base de datos se define en *src/main/resources/application.yml*, con valores por defecto que pueden sobreescribirse mediante las variables de entorno DB_URL, DB_USER y DB_PASSWORD.
 
 
-Instrucciones para ejecutar tests
+# Instrucciones para ejecutar tests
 
 Los tests de integración usan Testcontainers, por lo que Docker debe estar corriendo antes de ejecutarlos.
 
@@ -62,11 +59,11 @@ Los tests de integración usan Testcontainers, por lo que Docker debe estar corr
     mvn test
 
     
-Testcontainers
+# Testcontainers
 
-El proyecto usa spring-boot-testcontainers junto con testcontainers-postgresql para levantar una instancia real de PostgreSQL en un contenedor Docker durante los tests de integración, en lugar de usar una base de datos en memoria (como H2).
+El proyecto usa *spring-boot-testcontainers* junto con *testcontainers-postgresql* para levantar una instancia real de PostgreSQL en un contenedor Docker durante los tests de integración, en lugar de usar una base de datos en memoria (como H2).
 
-En PersistenceIntegrationTest, el contenedor se declara así:
+En *PersistenceIntegrationTest*, el contenedor se declara así:
 
     java
     @Container
@@ -80,10 +77,10 @@ En PersistenceIntegrationTest, el contenedor se declara así:
     @Container marca el campo como un contenedor administrado por Testcontainers.
     @ServiceConnection conecta automáticamente el DataSource de Spring Boot al contenedor levantado, sin necesidad de configurar manualmente la URL, usuario o contraseña.
 
-Esto permite validar el comportamiento real de JPA/Hibernate contra PostgreSQL (tipos de datos, constraints, dialecto SQL) en cada ejecución de test, garantizando mayor fidelidad que una base de datos en memoria.
+Esto permite validar el comportamiento real de *JPA/Hibernate* contra PostgreSQL (tipos de datos, constraints, dialecto SQL) en cada ejecución de test, garantizando mayor fidelidad que una base de datos en memoria.
 
 
-Query Methods implementados
+# Query Methods implementados
 
   -RescueCenterRepository.findByCode(String code): busca un centro por su código.
   
@@ -108,7 +105,7 @@ Query Methods implementados
   -TreatmentRepository.findByAnimalIdOrderByPerformedAtAsc(Long animalId): tratamientos de un animal, ordenados cronológicamente.
 
 
-Consultas JPQL implementadas
+# Consultas JPQL implementadas
   -SpecialistRepository.findActiveByExpertise(String expertiseName): especialistas activos con determinada experiencia, ordenados por apellido.
   
   -TreatmentRepository.findBetweenDates(LocalDateTime start, LocalDateTime end): tratamientos realizados entre dos fechas, ordenados cronológicamente.
@@ -120,7 +117,7 @@ Consultas JPQL implementadas
   -AnimalRepository.findInRehabilitationTreatedBySpecialistWithExpertise(RescueStatus status, String expertiseName): animales con determinado estado que hayan recibido al menos un tratamiento de un especialista con cierta experiencia. Usa @Query con DISTINCT en lugar de Query Method porque combina dos caminos de navegación distintos sobre la misma entidad y requiere evitar duplicados al atravesar colecciones 1:N y N:M.
 
 
-Tests de integración
+# Tests de integración
 
 PersistenceIntegrationTest cubre, contra una base de datos PostgreSQL real levantada con Testcontainers:
 
