@@ -1,6 +1,6 @@
 package com.deepblue.rescue.exception;
 
-public class ResourceNotFoundException extends RunTimeException {
+public class ResourceNotFoundException extends RuntimeException {
             
         public ResourceNotFoundException(String message){
             super(message); 
