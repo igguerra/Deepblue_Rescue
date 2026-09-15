@@ -10,7 +10,6 @@ import java.util.List;
 public interface SpecialistRepository extends JpaRepository<Specialist, Long> {
 
     // Paso 39: especialistas activos que posean determinada experiencia.
-    // Debe usar JOIN + LOWER + named parameter + active = true + ORDER BY.
     @Query("""
             select distinct s
             from Specialist s
