@@ -6,8 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SpecialistRepository extends JpaRepository<Specialist, Long> {
+
+
+    Optional<Specialist> findByProfessionalCode(String professionalCode);
 
     // Paso 39: especialistas activos que posean determinada experiencia.
     @Query("""
@@ -19,4 +23,5 @@ public interface SpecialistRepository extends JpaRepository<Specialist, Long> {
             order by s.lastName asc
             """)
     List<Specialist> findActiveByExpertise(@Param("expertiseName") String expertiseName);
+    
 }
