@@ -12,7 +12,7 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
 
     // Paso 41: tratamientos de un animal, ordenados cronológicamente (Query Method)
     // Entrada: animal.id -> Camino: Treatment -> animal -> id
-    List<Treatment> findByAnimalIdOrderByPerformedAtAsc(Long animalId);
+    List<Treatment> findByAnimalIdOrderByPerformedAtAsc(String animalId);
 
     // Paso 42: tratamientos realizados entre dos fechas (JPQL)
     @Query("""
