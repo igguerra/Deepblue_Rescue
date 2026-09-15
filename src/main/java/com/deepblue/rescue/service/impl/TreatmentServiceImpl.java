@@ -46,7 +46,7 @@ public class TreatmentServiceImpl implements TreatmentService {
     public List<TreatmentResponse> findByAnimalCode(String animalCode) {
 
         return treatmentRepository
-                                .findByAnimalIdOrderByPerformedAtAsc(animalCode)
+                                .findByAnimalAnimalCodeOrderByPerformedAtAsc(animalCode)
                                 .stream()
                                 .map(mapper::toResponse)
                                 .toList();

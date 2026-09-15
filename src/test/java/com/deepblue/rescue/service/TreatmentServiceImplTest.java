@@ -88,7 +88,8 @@ class TreatmentServiceImplTest {
     @Test
     void deberiaLanzarExcepcionCuandoAnimalNoExiste() {
         when(animalRepository.findByAnimalCode("AN-999")).thenReturn(Optional.empty());
-        CreateTreatmentRequest request = buildRequest(LocalDateTime.now());
+        CreateTreatmentRequest request = new CreateTreatmentRequest(
+                "AN-999", "SP-001", LocalDateTime.now(), TreatmentType.WOUND_CARE, "Limpieza de herida");
 
         assertThatThrownBy(() -> service.register(request))
                 .isInstanceOf(ResourceNotFoundException.class);
@@ -154,7 +155,7 @@ class TreatmentServiceImplTest {
         TreatmentResponse response = new TreatmentResponse(
                 1L, "AN-001", "SP-001", treatment.getPerformedAt(), TreatmentType.WOUND_CARE, "Limpieza");
 
-        when(treatmentRepository.findByAnimalIdOrderByPerformedAtAsc("AN-001"))
+        when(treatmentRepository.findByAnimalAnimalCodeOrderByPerformedAtAsc("AN-001"))
                 .thenReturn(List.of(treatment));
         when(mapper.toResponse(treatment)).thenReturn(response);
 
