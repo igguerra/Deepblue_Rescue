@@ -219,7 +219,7 @@ assertThat(found.get(0).getExpertiseAreas()).extracting(Expertise::getName)
     treatmentRepository.save(t1);
     treatmentRepository.save(t2);
 
-    List<Treatment> byAnimal = treatmentRepository.findByAnimalIdOrderByPerformedAtAsc(animal.getId());
+    List<Treatment> byAnimal = treatmentRepository.findByAnimalAnimalCodeOrderByPerformedAtAsc(animal.getAnimalCode()); 
     assertThat(byAnimal).hasSize(2);
     assertThat(byAnimal.get(0).getPerformedAt()).isBefore(byAnimal.get(1).getPerformedAt());
 
