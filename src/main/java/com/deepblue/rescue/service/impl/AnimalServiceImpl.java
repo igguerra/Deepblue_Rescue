@@ -28,7 +28,7 @@ public class AnimalServiceImpl implements AnimalService {
     public AnimalResponse findByCode(String animalCode) {
         Animal animal = animalRepository.findByAnimalCode(animalCode)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "No se encontró el animal con código: " + animalCode));
+                        "Animal not found by code: " + animalCode));
 
         return animalMapper.toResponse(animal);
     }
@@ -47,7 +47,7 @@ public class AnimalServiceImpl implements AnimalService {
     public boolean canReceiveTreatment(String animalCode) {
         Animal animal = animalRepository.findByAnimalCode(animalCode)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "No se encontró el animal con código: " + animalCode));
+                        "Animal not found by code: " + animalCode));
 
         RescueStatus status = animal.getRescueCase().getStatus();
 
