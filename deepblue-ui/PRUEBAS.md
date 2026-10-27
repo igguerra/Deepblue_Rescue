@@ -1,6 +1,6 @@
-Laboratorio-DeepBlue_Rescue_React
+# Laboratorio-DeepBlue_Rescue_React
 
-ISABELLA GUERRA – 2024114058
+ISABELLA GUERRA – 2024114058, 
 VALERIA GÁMEZ – 2024214029
 
 ## Cómo ejecutar
